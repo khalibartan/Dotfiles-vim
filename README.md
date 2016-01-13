@@ -1,3 +1,4 @@
+This repository is a fork of [Vivek's Dotfiles-vim](https://github.com/vivekiitkgp/Dotfiles-vim).
 My currently used Vim setup is based on the newer plugin management system
 called [vim-plug](https://github.com/junegunn/vim-plug).
 
@@ -44,3 +45,12 @@ However, note that this might not work out of the box on 32 bit machines. In
 that case, please have a look at
 [their](https://github.com/junegunn/vim-plug#post-update-hooks) documentation
 for manual installation process.
+I have added an embedded copy of [supertab](https://github.com/ervandew/supertab).
+If you want to install it go to the vim directory.
+Open the `.supertab.vmb` in `(g)vim` and source the file
+```
+vim ~/.vim/.supertab.vmb
+:source %
+```
+This will install supertab.
+
