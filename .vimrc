@@ -11,8 +11,8 @@ Plug 'docunext/closetag.vim'
 Plug 'Lokaltog/vim-easymotion'
 Plug 'altercation/vim-colors-solarized'
 Plug 'tomtom/quickfixsigns_vim'
-Plug 'Valloric/YouCompleteMe', {'do': './install.sh', 'frozen': 'true'}
-"Plug 'AndrewRadev/splitjoin.vim'
+"Plug 'Valloric/YouCompleteMe', {'do': './install.sh', 'frozen': 'true'}
+Plug 'AndrewRadev/splitjoin.vim'
 Plug 'tpope/vim-repeat'
 Plug 'godlygeek/tabular'
 Plug 'Shougo/unite.vim'
@@ -121,6 +121,7 @@ call plug#end()
     " set t_RV=
     set title
     set cursorline
+    set cursorcolumn
     set viminfo='20,\"500
     set hidden
     set history=100
@@ -221,7 +222,12 @@ call plug#end()
         call setpos('.', save_cursor)
         call setreg('/', old_query)
     endfunction
-
+    function! EnterSpontaneousMode()
+        inoremap <buffer> <BS> <ESC>
+    endfunction
+    function! LeaveSpontaneousMode()
+        iunmap <buffer> <BS>
+    endfunction
     function! ClearGutters()
         highlight clear SignColumn
         highlight clear LineNr
@@ -240,7 +246,7 @@ call plug#end()
         set guioptions-=L
         set guioptions-=m
         set guioptions+=a
-        set guifont=Source\ Code\ Pro\ Medium\ 10
+        set guifont=Sans\ Mono\ Droid\ 10
         set lines=40
     endif
 
@@ -422,3 +428,69 @@ call plug#end()
     autocmd User GoyoLeave nested call <SID>goyo_leave()
     " }
 " }
+" This block is based on https://github.com/bryankennedy/vimrc/blob/master/vimrc
+    " Escape special characters in a string for exact matching.
+    " This is useful to copying strings from the file to the search tool
+    " Based on this - http://peterodding.com/code/vim/profile/autoload/xolox/escape.vim
+    function! EscapeString (string)
+    let string=a:string
+    " Escape regex characters
+    let string = escape(string, '^$.*\/~[]')
+    " Escape the line endings
+    let string = substitute(string, '\n', '\\n', 'g')
+    return string
+    endfunction
+
+    " This function passed the visual block through a string escape function
+    " Based on this - http://stackoverflow.com/questions/676600/vim-replace-selected-text/677918#677918
+    function! GetVisual() range
+    " Save the current register and clipboard
+    let reg_save = getreg('"')
+    let regtype_save = getregtype('"')
+    let cb_save = &clipboard
+    set clipboard&
+
+    " Put the current visual selection in the " register
+    normal! ""gvy
+    let selection = getreg('"')
+
+    " Put the saved registers and clipboards back
+    call setreg('"', reg_save, regtype_save)
+    let &clipboard = cb_save
+
+    "Escape any special characters in the selection
+    let escaped_selection = EscapeString(selection)
+
+    return escaped_selection
+    endfunction
+
+    " Start the find and replace command across the entire file
+    vmap <leader>z <Esc>:%s/<c-r>=GetVisual()<cr>/
+
+" Easy tab navigation
+nnoremap <C-t>     :tabnew<CR>
+nnoremap <C-S-tab> <Esc>:tabprevious<CR>
+nnoremap <C-tab>   <Esc>:tabnext<CR>
+nnoremap <C-t>     <Esc>:tabnew<CR>
+
+set textwidth=79
+
+"spell check
+nmap  <leader>s     :set invspell spelllang=en<CR>
+nmap  <leader>ss    :set    spell spelllang=en-basic<CR>
+
+"grammer check
+nmap <leader>l :LanguageToolCheck<CR>
+nmap <leader>ll :LanguageToolClear<CR>
+
+" ;q Re-hardwrap Paragraph
+nnoremap <leader>q gqip
+
+" ;J Joins hardwrapped Paragraphs
+nnoremap <leader>J vipJ
+
+
+" autogeneration of ctags
+au BufWritePost *.c,*.cpp,*.h,*py silent! !ctags -R --fields=+l &
+
+colorscheme Tomorrow-Night-Eighties
