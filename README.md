@@ -14,7 +14,7 @@ Installation
 
 * Clone the repository
 
-  ```$ git clone https://github.com/vivekiitkgp/Dotfiles-vim.git ~/.vim```
+  ```$ git clone https://github.com/khalibartan/Dotfiles-vim.git ~/.vim```
 
 * Symlink the `.(g)vimrc` files from `~/.vim` directory to your home directory.
   You may need to remove any preexisting files if you had setup vim before.
